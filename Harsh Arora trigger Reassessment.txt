@@ -1,0 +1,97 @@
+----------------Trigger---------------
+
+
+trigger CaseTrigger on Case (after update) {
+    if(constant.runCaseTrigger && trigger.isUpdate && trigger.isAfter){
+         CaseTriggerHandler.checkIsPrimary(trigger.new,trigger.oldMap);
+    }
+}
+---------------Handler-------------
+
+
+ public static void checkIsPrimary(List<case> newList, Map<Id,Case> oldCaseMap){
+        Set<id> accountIds = new Set<Id>();
+        List<Case> caseToUpdate = new List<Case>();
+        for(Case c : newList){
+            if(c.Status != oldCaseMap.get(c.id).Status  && c.Status == 'Closed'){
+                if(c.isPrimary__c == true){
+                    accountIds.add(c.AccountId);
+                    
+                }
+            }
+        }
+        if(accountIds.size()>0){
+            for(Case updateCase: [SELECT id,status 
+                                  FROM Case
+                                  WHERE AccountId IN :accountIds 
+                                  AND Status != :'Closed'] ){
+                                      Case c = new Case();
+                                      c.id = updateCase.id;
+                                      c.Status = 'Closed';
+                                      caseToUpdate.add(c);
+                                  }
+            if(caseToUpdate.size()>0){
+                update caseToUpdate;
+                constant.runAccountTrigger = false;
+            }
+        }    
+    }
+
+
+
+----------------Test-------------------
+
+@isTest
+public class CaseTriggerHandlerTest {
+	@isTest
+    public static void testCheckIsPrimary(){
+        Account acc = new Account();
+        acc.name = 'test';
+        insert acc;
+        List<Case> caseCreated = new List<Case>();
+        List<Case> updatedCases = new List<Case>();
+        caseCreated = TestUtils.CreateCaseRecord(5, false);
+        for(Case caseNew:caseCreated){
+            caseNew.accountid = acc.id;  
+        }
+        caseCreated.get(0).isPrimary__c = true;
+        insert caseCreated;
+        caseCreated.get(0).Status = 'Closed';
+        Test.startTest();
+       update caseCreated.get(0);
+        updatedCases = [SELECT id, status 
+                       FROM Case
+                       WHERE accountId = :acc.id];
+        Test.stopTest();
+        System.assertEquals(updatedCases.get(1).Status,'Closed');
+        System.assertEquals(updatedCases.get(3).Status,'Closed');
+    }
+}
+
+
+----------------TestUtils--------------------
+
+
+
+public static List<Case> CreateCaseRecord(Integer count,  Boolean isInsert){
+        List<Case> caseList = new List<Case>();
+         for(Integer i=1; i<=count; i++){
+            Case newCase = new Case();
+            newCase.Status = 'New';
+            newCase.Origin = 'Phone'; 
+            caseList.add(newCase);
+        }
+        if(isInsert){
+            insert caseList;
+        }
+        return caseList;
+    }
+
+
+------------Constant--------------
+
+
+public class Constant {
+    Public static boolean runCaseTrigger  = true;
+}
+
