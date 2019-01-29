@@ -1,0 +1,15 @@
+git cherry-pick -m 1 --strategy recursive -X patience <Commit #1> <Commit #2>......<Commit #226>
+git cherry-pick --continue
+git fetch <org>
+
+git cherry-pick -m 1 --strategy recursive -X patience f958f7b 2c5f82f f6ec50a
+
+git cherry-pick -m 1 -x <Commit #1>
+
+
+$ git commit -am "FAQ__kav layout assignment removed" --no-verify
+
+
+git push -u origin feature/ACL-I-359902-20190115
+
+
