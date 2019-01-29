@@ -20,7 +20,7 @@ Assigmnent 9
 
 Assigmnent 10
 
--> git reset --hard 
+-> git reset --hard
 
 Assignment 16
 
@@ -29,8 +29,8 @@ A tag represents a version of a particular branch at a moment in time. A branch 
 Assignment 17
 
 -git merge apply all unique commits from branch A into branch B in one commit with final result
--git merge doesn’t rewrite commit history, just adds one new commit
+-git merge doesnï¿½t rewrite commit history, just adds one new commit
 -git rebase gets all unique commits from both branches and applies them one by one
--git rebase rewrites commit history but doesn’t create extra commit for merging
+-git rebase rewrites commit history but doesnï¿½t create extra commit for merging
 
 
