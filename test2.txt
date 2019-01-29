@@ -1,1 +1,10 @@
 Main hoon na?
+lagta toh ni h!
+
+Assignment 6
+
+-> Git Log
+
+Assignment 7
+
+-> Git blame
